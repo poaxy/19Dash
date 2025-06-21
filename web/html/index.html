@@ -72,8 +72,8 @@
 
 {{ template "page/body_start" .}}
 <a-layout id="app" v-cloak :class="themeSwitcher.currentTheme">
-  <a-sidebar></a-sidebar>
-  <a-layout id="content-layout">
+  {{template "component/aNavbar" .}}
+  <a-layout id="content-layout" style="padding-top: 50px;"> {{-- Add padding to offset fixed navbar --}}
     <a-layout-content>
       <a-spin :spinning="loadingStates.spinning" :delay="200" :tip="loadingTip">
         <transition name="list" appear>
@@ -447,8 +447,7 @@
   </a-modal>
 </a-layout>
 {{template "page/body_scripts" .}}
-{{template "component/aSidebar" .}}
-{{template "component/aThemeSwitch" .}}
+{{template "component/aThemeSwitch" .}} {{-- This is now part of aNavbar --}}
 {{template "component/aCustomStatistic" .}}
 {{template "modals/textModal"}}
 <script>

@@ -42,8 +42,8 @@
 
 {{ template "page/body_start" .}}
 <a-layout id="app" v-cloak :class="themeSwitcher.currentTheme">
-  <a-sidebar></a-sidebar>
-  <a-layout id="content-layout">
+  {{template "component/aNavbar" .}}
+  <a-layout id="content-layout" style="padding-top: 50px;"> {{-- Add padding to offset fixed navbar --}}
     <a-layout-content>
       <a-spin :spinning="loadingStates.spinning" :delay="500" tip='{{ i18n "loading"}}'>
         <transition name="list" appear>
@@ -164,8 +164,7 @@
 <script src="{{ .base_path }}assets/codemirror/fold/foldcode.js"></script>
 <script src="{{ .base_path }}assets/codemirror/fold/foldgutter.js"></script>
 <script src="{{ .base_path }}assets/codemirror/fold/brace-fold.js"></script>
-{{template "component/aSidebar" .}}
-{{template "component/aThemeSwitch" .}}
+{{template "component/aThemeSwitch" .}} {{-- This is now part of aNavbar --}}
 {{template "component/aTableSortable" .}}
 {{template "component/aSettingListItem" .}}
 {{template "modals/ruleModal"}}
