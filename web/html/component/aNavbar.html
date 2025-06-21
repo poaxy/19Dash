@@ -1,0 +1,267 @@
+{{define "component/navbar/content"}}
+<template>
+    <div class="top-navbar-container">
+        <a-layout-header
+            :theme="themeSwitcher.currentTheme"
+            :class="['navbar-header', themeSwitcher.currentTheme]"
+            style="position: fixed; z-index: 100; width: 100%; display: flex; justify-content: space-between; padding: 0 20px; height: 50px; line-height: 50px;">
+
+            <div class="navbar-left">
+                <div class="logo">
+                    <a :href="basePath + 'panel/'">3X-UI</a>
+                </div>
+                <a-menu
+                    :theme="themeSwitcher.currentTheme"
+                    mode="horizontal"
+                    :selected-keys="activeTab"
+                    @click="({key}) => openLink(key)"
+                    class="desktop-menu"
+                    :style="{ lineHeight: '48px', borderBottom: 'none' }">
+                    <a-menu-item v-for="tab in tabs" :key="tab.key">
+                        <a-icon :type="tab.icon"></a-icon>
+                        <span v-text="tab.title"></span>
+                    </a-menu-item>
+                </a-menu>
+            </div>
+
+            <div class="navbar-right">
+                <a-theme-switch style="margin-right: 15px;"></a-theme-switch>
+                <a-button ghost type="primary" @click="toggleDrawer" class="mobile-menu-button">
+                    <a-icon :type="drawerVisible ? 'close' : 'menu'"></a-icon>
+                </a-button>
+            </div>
+        </a-layout-header>
+
+        <a-drawer
+            title="Menu"
+            placement="left"
+            :closable="true"
+            @close="closeDrawer"
+            :visible="drawerVisible"
+            :wrap-class-name="['mobile-drawer', themeSwitcher.currentTheme]"
+            :body-style="{ padding: 0 }"
+            width="250px"
+        >
+            <a-menu
+                :theme="themeSwitcher.currentTheme"
+                mode="inline"
+                :selected-keys="activeTab"
+                @click="handleDrawerMenuClick">
+                <a-menu-item v-for="tab in tabs" :key="tab.key">
+                    <a-icon :type="tab.icon"></a-icon>
+                    <span v-text="tab.title"></span>
+                </a-menu-item>
+            </a-menu>
+        </a-drawer>
+    </div>
+</template>
+{{end}}
+
+{{define "component/aNavbar"}}
+<style>
+    .navbar-header {
+        border-bottom: 1px solid #f0f0f0;
+        transition: background 0.3s ease;
+    }
+    .navbar-header.light {
+        background: #fff;
+    }
+    .navbar-header.dark {
+        background: #001529;
+        border-bottom-color: #303030;
+    }
+
+    .navbar-left {
+        display: flex;
+        align-items: center;
+    }
+
+    .logo a {
+        font-size: 18px;
+        font-weight: bold;
+        margin-right: 24px;
+    }
+    .navbar-header.light .logo a {
+        color: #001529;
+    }
+    .navbar-header.dark .logo a {
+        color: #fff;
+    }
+
+    .navbar-right {
+        display: flex;
+        align-items: center;
+    }
+
+    /* Desktop menu adjustments */
+    .desktop-menu .ant-menu-item {
+        padding: 0 15px;
+    }
+    .desktop-menu.ant-menu-dark .ant-menu-item > a,
+    .desktop-menu.ant-menu-dark .ant-menu-item > span,
+    .desktop-menu.ant-menu-dark .ant-menu-item > .anticon {
+        color: rgba(255, 255, 255, 0.65);
+    }
+    .desktop-menu.ant-menu-dark .ant-menu-item-selected > a,
+    .desktop-menu.ant-menu-dark .ant-menu-item-selected > span,
+    .desktop-menu.ant-menu-dark .ant-menu-item-selected > .anticon {
+        color: #fff;
+    }
+    .desktop-menu.ant-menu-light .ant-menu-item > a,
+    .desktop-menu.ant-menu-light .ant-menu-item > span,
+    .desktop-menu.ant-menu-light .ant-menu-item > .anticon {
+        color: rgba(0, 0, 0, 0.65);
+    }
+     .desktop-menu.ant-menu-light .ant-menu-item-selected > a,
+     .desktop-menu.ant-menu-light .ant-menu-item-selected > span,
+     .desktop-menu.ant-menu-light .ant-menu-item-selected > .anticon {
+        color: #1890ff; /* Ant Design primary color */
+    }
+
+
+    /* Mobile Drawer Styling */
+    .mobile-drawer .ant-drawer-body {
+        padding: 0 !important;
+    }
+    .mobile-drawer.dark .ant-drawer-content-wrapper {
+      background-color: #001529;
+    }
+    .mobile-drawer.dark .ant-drawer-header {
+      background-color: #001529;
+      border-bottom: 1px solid #303030;
+    }
+    .mobile-drawer.dark .ant-drawer-title,
+    .mobile-drawer.dark .ant-drawer-close .anticon {
+      color: rgba(255,255,255,0.85);
+    }
+    .mobile-drawer.light .ant-drawer-content-wrapper {
+      background-color: #fff;
+    }
+     .mobile-drawer.light .ant-drawer-header {
+      background-color: #fff;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .mobile-drawer.light .ant-drawer-title,
+    .mobile-drawer.light .ant-drawer-close .anticon {
+      color: rgba(0,0,0,0.85);
+    }
+
+
+    /* Responsive Visibility */
+    .mobile-menu-button {
+        display: none; /* Hidden by default */
+    }
+
+    @media (max-width: 768px) {
+        .desktop-menu {
+            display: none !important;
+        }
+        .mobile-menu-button {
+            display: inline-block !important; /* Show on mobile */
+        }
+        .navbar-header {
+            padding: 0 10px !important; /* Reduce padding on mobile */
+        }
+        .logo a {
+             margin-right: 10px;
+        }
+    }
+</style>
+
+<script>
+    Vue.component('a-navbar', {
+        data() {
+            return {
+                tabs: [
+                    {
+                        key: '{{ .base_path }}panel/',
+                        icon: 'dashboard',
+                        title: '{{ i18n "menu.dashboard"}}'
+                    },
+                    {
+                        key: '{{ .base_path }}panel/inbounds',
+                        icon: 'user',
+                        title: '{{ i18n "menu.inbounds"}}'
+                    },
+                    {
+                        key: '{{ .base_path }}panel/settings',
+                        icon: 'setting',
+                        title: '{{ i18n "menu.settings"}}'
+                    },
+                    {
+                        key: '{{ .base_path }}panel/xray',
+                        icon: 'tool',
+                        title: '{{ i18n "menu.xray"}}'
+                    },
+                    {
+                        key: '{{ .base_path }}logout/',
+                        icon: 'logout',
+                        title: '{{ i18n "menu.logout"}}'
+                    },
+                ],
+                activeTab: [ // This needs to be reactive to the current page
+                    // location.pathname + location.search would be more accurate if base_path is complex
+                    '{{ .request_uri }}'
+                ],
+                drawerVisible: false,
+                basePath: '{{ .base_path }}', // Store base_path for logo link
+            }
+        },
+        watch: {
+            '$route' (to, from) { // Watch for route changes to update activeTab
+                this.updateActiveTab();
+            }
+        },
+        created() {
+            this.updateActiveTab(); // Initial active tab set
+             // Listen for theme changes to correctly apply classes
+            window.addEventListener('themeChanged', (event) => {
+                this.$forceUpdate(); // Force re-render to update theme class on drawer etc.
+            });
+        },
+        methods: {
+            updateActiveTab() {
+                // More robust active tab detection
+                let currentPath = window.location.pathname + window.location.search;
+                // Ensure paths are compared consistently (e.g. with/without trailing slash if base_path varies)
+                if (currentPath.endsWith('/') && currentPath !== this.basePath) {
+                    currentPath = currentPath.slice(0, -1);
+                }
+                let matchedKey = '';
+                for (const tab of this.tabs) {
+                    let tabKey = tab.key;
+                     if (tabKey.endsWith('/') && tabKey !== this.basePath) {
+                        tabKey = tabKey.slice(0, -1);
+                    }
+                    if (currentPath === tabKey) {
+                        matchedKey = tab.key;
+                        break;
+                    }
+                    // Handle cases where request_uri might be /panel/ and key is /panel/
+                    if (currentPath + '/' === tab.key) {
+                         matchedKey = tab.key;
+                         break;
+                    }
+                }
+                this.activeTab = matchedKey ? [matchedKey] : ['{{ .request_uri }}'];
+            },
+            openLink(key) {
+                return key.startsWith('http') ?
+                    window.open(key) :
+                    location.href = key;
+            },
+            toggleDrawer() {
+                this.drawerVisible = !this.drawerVisible;
+            },
+            closeDrawer() {
+                this.drawerVisible = false;
+            },
+            handleDrawerMenuClick({key}) {
+                this.openLink(key);
+                this.closeDrawer();
+            }
+        },
+        template: `{{template "component/navbar/content"}}`,
+    });
+</script>
+{{end}}
